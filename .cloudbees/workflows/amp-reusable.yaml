@@ -1,0 +1,40 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: amp-reusable
+on:
+  workflow_call:
+  workflow_dispatch:
+jobs:
+  MyActionsTest:
+    steps:
+      - uses: cloudbees-io/publish-evidence-item@v1
+        name: TestEvidenceItem
+        with:
+          content: "# kcp test publish evidence"
+      - uses: cloudbees-io/register-build-artifact@v1
+        name: TestRegisterBuildArtifact
+        with:
+          version: "1.0"
+          url: https://testKcpArtifact1.io
+          digest: ""
+          name: KcpArtifact1
+      - uses: cloudbees-io/register-deployed-artifact@v1
+        name: TestRegisterDeployedArtifact
+        with:
+          version: "1.0"
+          url: https://kcpartifact1.io
+          digest: ""
+          target-environment: kcp-env
+          name: KcpArtifact1
+  TestManualApproval:
+    with:
+      approvers: 0a808e26-f884-11ec-aa0a-42010a83ae55
+      disallowLaunchByUser: false
+      instructions: "You better approve ;)"
+      approvalInputs: |
+        testString:
+          type: string
+          required: true
+          description: abc
+    timeout-minutes: 4320
+    delegates: cloudbees-io/manual-approval/custom-job.yml@v1
